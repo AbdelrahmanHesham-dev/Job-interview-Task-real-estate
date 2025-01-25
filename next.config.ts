@@ -1,8 +1,8 @@
-import { NextConfig } from 'next';
+import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['your-image-domain.com'],
+    domains: ["img.freepik.com"],
   },
 };
 
