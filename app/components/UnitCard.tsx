@@ -10,6 +10,14 @@ interface UnitCardProps {
   unit: Unit;
   onDelete: (id: string) => void;
 }
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-EG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
 
 export default function UnitCard({ unit, onDelete }: UnitCardProps) {
   return (
@@ -24,7 +32,7 @@ export default function UnitCard({ unit, onDelete }: UnitCardProps) {
             <div className="w-full"></div>
 
             <div className="text-sm text-gray-500">
-              <p>Added {unit.createdAt}</p>
+              <p>Added {formatDate(unit.createdAt)}</p>
             </div>
           </div>
         </div>
@@ -75,11 +83,15 @@ function UnitDetails({ unit }: { unit: Unit }) {
       <div className="mt-4 flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-[#494949]">
           <BedSingle className="size-6 p-1 bg-white border border-primary text-primary rounded-md" />
-          <span className="font-medium text-sm">{unit.bedroomsNumber} Rooms</span>
+          <span className="font-medium text-sm">
+            {unit.bedroomsNumber} Rooms
+          </span>
         </div>
         <div className="flex items-center gap-1.5 text-[#494949]">
           <Bath className="size-6 p-1 bg-white border border-primary text-primary rounded-md" />
-          <span className="font-medium text-sm">{unit.bathroomsNumber} Bathroom</span>
+          <span className="font-medium text-sm">
+            {unit.bathroomsNumber} Bathroom
+          </span>
         </div>
         <div className="flex items-center gap-1.5 text-[#494949]">
           <Maximize className="size-6 p-1 bg-white border border-primary text-primary rounded-md" />
