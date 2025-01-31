@@ -19,6 +19,15 @@ export const filterUnits = (units: Unit[], statusFilter: StatusType) => {
   );
 };
 
+export function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-EG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 export const sortUnits = (
   units: Unit[],
   dateSort: SortOrder,

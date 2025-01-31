@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/lib/coordination";
+import { formatCurrency, formatDate } from "@/lib/coordination";
 import { Unit } from "@/types/unit";
 import { Bath, BedSingle, Maximize, Trash } from "lucide-react";
 import Image from "next/image";
@@ -9,14 +9,6 @@ import { UnitStatus } from "./UnitStatus";
 interface UnitCardProps {
   unit: Unit;
   onDelete: (id: string) => void;
-}
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-EG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
 }
 
 export default function UnitCard({ unit, onDelete }: UnitCardProps) {
