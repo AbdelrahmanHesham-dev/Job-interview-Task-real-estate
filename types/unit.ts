@@ -1,4 +1,4 @@
-export type UnitStatus = "reserved" | "rejected" | "sold";
+export type UnitStatus = "pending" | "rejected" | "sold";
 
 export interface Unit {
     id: string;

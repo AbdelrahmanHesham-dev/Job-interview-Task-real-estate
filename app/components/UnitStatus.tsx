@@ -7,7 +7,7 @@ export function UnitStatus({ status }: { status: UnitStatus }) {
       className={cn(
         "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium capitalize text-white",
         {
-          "bg-green-500": status === "reserved",
+          "bg-green-500": status === "pending",
           "bg-blue-500": status === "rejected",
           "bg-red-500": status === "sold",
         }
