@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sortUnits } from "@/lib/coordination";
 import { SortOrder, Unit } from "@/types/unit";
 import React from "react";
@@ -9,47 +10,44 @@ import SortButton from "./SortButton";
 import UnitCard from "./UnitCard";
 
 export default function UnitsList() {
-  const [units, setUnits] = useState<Unit[]>([]);
   const [dateSort, setDateSort] = useState<SortOrder>("desc");
   const [priceSort, setPriceSort] = useState<SortOrder>("desc");
 
-  useEffect(() => {
-    const fetchUnits = async () => {
-      try {
-        const response = await fetch(
-          "https://678acd27dd587da7ac2b7246.mockapi.io/api/v1/units"
-        );
-        const data = await response.json();
-        setUnits(data);
-      } catch (error) {
-        console.error("error ", error);
-      }
-    };
+  const queryClient = useQueryClient();
 
-    fetchUnits();
-  }, []);
+  const {
+    data: units = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["units"],
+    queryFn: async () => {
+      const response = await fetch(
+        "https://678acd27dd587da7ac2b7246.mockapi.io/api/v1/units"
+      );
+      if (!response.ok) throw new Error("Failed to fetch units");
+      return response.json();
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const sortedUnits = sortUnits(units, dateSort, priceSort);
-
-  const handleDelete = async (id: string) => {
-    try {
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
       const response = await fetch(
         `https://678acd27dd587da7ac2b7246.mockapi.io/api/v1/units/${id}`,
         {
           method: "DELETE",
         }
       );
-
-      if (response.ok) {
-        setUnits((prevUnits) => prevUnits.filter((unit) => unit.id !== id));
-        console.log("Deleted unit with id:", id);
-      } else {
-        console.error("Failed to delete the unit");
-      }
-    } catch (error) {
-      console.error("Error deleting unit:", error);
-    }
-  };
+      if (!response.ok) throw new Error("Failed to delete unit");
+      return id;
+    },
+    onSuccess: (deletedId) => {
+      queryClient.setQueryData(["units"], (oldUnits: Unit[] | undefined) =>
+        oldUnits ? oldUnits.filter((unit) => unit.id !== deletedId) : []
+      );
+    },
+  });
 
   const toggleSort = (type: "date" | "price") => {
     if (type === "date") {
@@ -60,6 +58,12 @@ export default function UnitsList() {
       setDateSort("desc");
     }
   };
+
+  if (isLoading) return <p className="text-center">Loading units...</p>;
+  if (error)
+    return <p className="text-center text-red-500">Error loading units</p>;
+
+  const sortedUnits = sortUnits(units, dateSort, priceSort);
 
   return (
     <div className="space-y-4">
@@ -73,7 +77,11 @@ export default function UnitsList() {
 
       <div className="space-y-4">
         {sortedUnits.map((unit) => (
-          <UnitCard key={unit.id} unit={unit} onDelete={handleDelete} />
+          <UnitCard
+            key={unit.id}
+            unit={unit}
+            onDelete={deleteMutation.mutate}
+          />
         ))}
       </div>
     </div>

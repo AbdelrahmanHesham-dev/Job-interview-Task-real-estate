@@ -1,4 +1,9 @@
 import UnitsList from "./components/UnitsList";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Madmon",
+};
 
 export default function Home() {
   return (
